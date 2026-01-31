@@ -6,6 +6,7 @@ import * as actions from "../../store/actions";
 
 import './Login.scss';
 import { FormattedMessage } from 'react-intl';
+import { handleLoginApi } from '../../services/userService';
 
 class Login extends Component {
     constructor(props) {
@@ -14,6 +15,7 @@ class Login extends Component {
             username: 'Khang_IT',
             password: 'ITKhang',
             isShowPassword: false,
+            errMessage: ''
         }
     }    
 
@@ -29,10 +31,37 @@ class Login extends Component {
         })
     }
 
-    handleLogin = () => {
-        console.log('username: ', this.state.username, ' password: ', this.state.password);
-        console.log('all state ', this.state);
-    }
+    handleLogin = async() => {
+        // console.log('username: ', this.state.username, ' password: ', this.state.password);
+        // console.log('all state ', this.state);
+        this.setState({errMessage: ''})
+        try {
+            let data = await handleLoginApi(this.state.username, this.state.password);
+            console.log("login response: ", data)
+
+            if (data && data.errCode !==0) 
+                {this.setState({errMessage: data.message});
+            return;
+            }
+            // if (data && data.errCode === 0) {
+            //     //to do
+            else {
+                this.props.userLoginSuccess(data.user)
+                console.log('login successful: ', data);
+            }
+        } 
+
+        catch (error) {
+            console.log("login error: ", error);
+
+            if (error.response && error.response.data) {
+                    this.setState({errMessage: error.response.data.message || "Login failed"});
+                    console.log("Error message: ", error.response.data);
+            } else {
+                this.setState({errMessage: "Input fields are required."});
+            }
+        }
+    };
 
     handleShowHidePassword = () => {
         this.setState({
@@ -69,6 +98,11 @@ class Login extends Component {
                             </span>
                             </div>
                         </div>
+
+                        <div className='col-12' style={{color: 'red'}}> 
+                            {this.state.errMessage}
+                        </div>
+
                         <div className='col-12'>
                             <button className='btn-login' onClick={()=> {this.handleLogin()}}>Login</button>
                         </div>
@@ -98,8 +132,9 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         navigate: (path) => dispatch(push(path)),
-        adminLoginSuccess: (adminInfo) => dispatch(actions.adminLoginSuccess(adminInfo)),
-        adminLoginFail: () => dispatch(actions.adminLoginFail()),
+        // adminLoginSuccess: (adminInfo) => dispatch(actions.adminLoginSuccess(adminInfo)),
+        // userLoginFail: () => dispatch(actions.userLoginFail()),
+        userLoginSuccess: (userInfo) => dispatch(actions.userLoginSuccess(userInfo))
     };
 };
 
