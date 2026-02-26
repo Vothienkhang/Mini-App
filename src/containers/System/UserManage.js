@@ -2,14 +2,16 @@ import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import './UserManage.scss';
-import { getAllUsers } from '../../services/userService';
+import { getAllUsers, createNewUserService } from '../../services/userService';
+import ModalUser from './ModalUser';
 
 class UserManage extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            arrUsers: []
+            arrUsers: [],
+            isOpenModalUser: false
         }
     }
 
@@ -25,11 +27,44 @@ class UserManage extends Component {
     }
 }
 
+    toggleUserModal = () => {
+        this.setState({
+            isOpenModalUser: !this.state.isOpenModalUser
+        });
+    }
+    
+    getAllUsersFromReact = async () => {
+        let response = await getAllUsers('ALL');
+        if (response && response.errCode === 0) {
+            this.setState({ arrUsers: response.users });
+        }
+    }
+
+    handleAddNewUser = () => {
+        this.setState({
+            isOpenModalUser: true
+        });
+    }
+
+    createNewUser = async (data) => {
+        try {
+            let response = await createNewUserService(data);
+                if (response && response.errCode === 0) {
+                    this.getAllUsersFromReact();
+                } else {
+                    alert(response.errMessage);
+                }
+        } catch (error) {
+            console.log('Check error: ', error);
+        }
+    }
+
+
     /** Life cycle
      * Run component:
      * 1. Run constructor -> init state
      * 2. Did mount (set state)
-     * 3. Render
+     * 3. Render (re-render if have state change)
      * 
      * 
      * 
@@ -37,11 +72,24 @@ class UserManage extends Component {
 
 
     render() {
-        console.log('Check render ', this.state);
         let arrUsers = this.state.arrUsers;
+        // console.log('Check render arrUsers ', arrUsers);
         return (
             <div className="user-container">
+                <ModalUser
+                    isOpen={this.state.isOpenModalUser}
+                    toggleFromParent={this.toggleUserModal}
+                    createNewUser={this.createNewUser}
+                />
                 <div className='title text-center'>User Management</div>
+                <div className='mx-1'>
+                    <button 
+                    className='btn btn-primary px-3'
+                    onClick={() => this.handleAddNewUser()}
+                    >
+                    <i className="fas fa-plus"></i> Add new user
+                    </button>
+                </div>
                 <div className='users-table mt-3 mx-1'>
 
                     <table id='customers'>
@@ -54,7 +102,6 @@ class UserManage extends Component {
                         </tr>
                         
                             { arrUsers && arrUsers.map((item, index) => {
-                                console.log('Check map', item, index);
                                 return (
                                     <tr key={index}>
                                         <td>{item.email}</td>
