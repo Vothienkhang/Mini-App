@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './ModalUser.scss';
+import emitter from '../../utils/emitter';
 
 class ModalUser extends Component {
 
@@ -15,6 +16,21 @@ class ModalUser extends Component {
             lastName: '',
             address: ''
         };
+
+        this.listenToEmitter();
+    }
+
+    listenToEmitter() {
+        emitter.on('EVENT_CLEAR_MODAL_DATA', (data) => {
+            console.log('Listen emitter: ', data);
+            this.setState({
+                email: '',
+                password: '',
+                firstName: '',
+                lastName: '',
+                address: ''
+            });
+        });
     }
 
     handleOnChangeInput = (event, id) => {
@@ -48,13 +64,8 @@ class ModalUser extends Component {
     };
 
     componentDidMount() {
+        console.log('mounting modal');
     }
-
-    // toggle = () => {
-    //     // this.setState({
-    //     //     modal: !this.state.modal
-    //     // });
-    // }
 
     render() {
         return (
