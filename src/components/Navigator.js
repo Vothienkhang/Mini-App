@@ -27,31 +27,31 @@ class Menu extends Component {
     render() {
         const { name, active, link, children, onClick, hasSubMenu, onLinkClick } = this.props;
         return (
-            <li className={"menu" + (hasSubMenu ? " has-sub-menu" : "") + ("") + (active ? " active" : "")}>
-                {hasSubMenu ? (
-                    <Fragment>
-                        <span
-                            data-toggle="collapse"
-                            className={"menu-link collapsed"}
-                            onClick={onClick}
-                            aria-expanded={"false"}
-                        >
-                            <FormattedMessage id={name} />
-                            <div className="icon-right">
-                                <i className={"far fa-angle-right"} />
-                            </div>
-                        </span>
-                        <div>
-                            <ul className="sub-menu-list list-unstyled">
-                                {children}
-                            </ul>
+            <li className={`menu ${hasSubMenu ? 'has-sub-menu' : ''} ${active ? 'active' : ''}`}>                
+            {hasSubMenu ? (
+                <Fragment>
+                    <span
+                        data-toggle="collapse"
+                        className={"menu-link collapsed"}
+                        onClick={onClick}
+                        aria-expanded={"false"}
+                    >
+                        <FormattedMessage id={name} />
+                        <div className="icon-right">
+                            <i className={"far fa-angle-right"} />
                         </div>
-                    </Fragment>
-                ) : (
-                        <Link to={link} className="menu-link" onClick={onLinkClick}>
-                            <FormattedMessage id={name} />
-                        </Link>
-                    )}
+                    </span>
+                    <div>
+                        <ul className="sub-menu-list list-unstyled">
+                            {children}
+                        </ul>
+                    </div>
+                </Fragment>
+            ) : (
+                <Link to={link} className="menu-link" onClick={onLinkClick}>
+                    <FormattedMessage id={name} />
+                </Link>
+            )}
             </li>
         );
     }
@@ -204,7 +204,7 @@ class Navigator extends Component {
                                                         active={isMenuHasSubMenuActive}
                                                         name={menu.name}
                                                         link={menu.link}
-                                                        hasSubMenu={menu.subMenus}
+                                                        hasSubMenu={menu.subMenus && menu.subMenus.length > 0}
                                                         isOpen={isSubMenuOpen}
                                                         onClick={() => this.toggle(groupIndex, menuIndex)}
                                                         onLinkClick={onLinkClick}
