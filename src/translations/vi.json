@@ -36,5 +36,15 @@
             "handbook": "Cẩm nang",
             "manage-handbook": "Quản lý cẩm nang"
         }
+    },
+
+    "manage-user": {
+        "title": "Quản lý người dùng",
+        "add-new": "Thêm mới",
+        "email": "Email",
+        "first-name": "Tên",
+        "last-name": "Họ",
+        "address": "Địa chỉ",
+        "actions": "Hành động"
     }
 }
